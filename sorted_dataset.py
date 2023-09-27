@@ -15,7 +15,10 @@ sorted_dataset.reset_index(drop=True)
 sorted_dataset.to_csv('sorted_dataset.csv',index=False)
 
 #Remove duplicated rows
-sorted_dataset= pd.read_csv('sorted_dataset.csv')
 deduplicated_dataset = sorted_dataset.drop_duplicates()
-deduplicated_dataset.to_csv('deduplicated_dataset.csv', index=False)
-deduplicated_dataset.head()
+deduplicated_rows = deduplicated_dataset[deduplicated_dataset.duplicated()]
+if not deduplicated_rows.empty:
+  print("Duplicated rows found")
+  print(deduplicated_rows)
+else:
+  print("no")
