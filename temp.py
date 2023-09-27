@@ -4,6 +4,7 @@ from scrapy import Selector
 import csv
 import pandas as pd
 import itertools
+import re
 
 class MoviesSpider(scrapy.Spider):
     name = 'movies_spider'
@@ -18,14 +19,21 @@ class MoviesSpider(scrapy.Spider):
         titles = response.xpath('//*[@id="filter_system"]/div[2]/table/tbody/tr//h4/a/text()').extract()
         alt_titles = response.xpath('//*[@id="filter_system"]/div[2]/table/tbody/tr/td[3]/div/div[1]/text()').extract()
         genres = response.xpath('//*[@id="filter_system"]/div[2]/table/tbody/tr/td[3]/div/div[2]/text()').extract()
-        release_year = response.xpath('//*[@id="filter_system"]/div[2]/table/tbody/tr/td[3]/div/div[3]/text()').extract()
+        duration = response.xpath('//*[@id="filter_system"]/div[2]/table/tbody/tr/td[3]/div/div[3]/text()').extract()
         movie_rank = response.xpath('//*[@id="filter_system"]/div[2]/table/tbody/tr/td[1]/a/span/text()').extract()
         ratings = response.xpath('//*[@id="filter_system"]/div[2]/table/tbody/tr/td[4]/div/div[1]/text()').extract()
-        print(ratings)
-        print(len(ratings))
+        release_year = []
+        for title in titles:
+            substrings = re.search(r'(.+)\s\((\d{4})\)', title)
+            titles[titles.index(title)] = substrings.group(1)
+            print(title)
+            release_year.append(substrings.group(2))
+            
+        print(titles)
+
         updated_alt_titles = []
         updated_genre = []
-        updated_release_year = []
+        updated_duration = []
 
         i=0
         for alt_title,genre in zip(alt_titles,genres):
@@ -33,16 +41,16 @@ class MoviesSpider(scrapy.Spider):
                 alt_title = alt_title.replace("Alternative title:",'')
                 updated_alt_titles.append(alt_title)
                 updated_genre.append(genre)
-                updated_release_year.append(release_year[i])
+                updated_duration.append(duration[i])
                 i+=1
                 
             else:
                 updated_alt_titles.append('')
                 updated_genre.append(alt_title)
-                updated_release_year.append(genre)
+                updated_duration.append(genre)
                 
             
-        dict = {'Title':titles, 'AlternativeTitle':updated_alt_titles, 'Genre':updated_genre, 'ReleaseYear':updated_release_year, 'MovieRank':movie_rank, 'Rating':ratings}
+        dict = {'Title':titles, 'AlternativeTitle':updated_alt_titles, 'Genre':updated_genre, 'Duration':updated_duration,'ReleaseYear':release_year, 'MovieRank':movie_rank, 'Rating':ratings}
         df = pd.DataFrame(dict)
         df.to_csv('movie_data.csv',index=False)
          
