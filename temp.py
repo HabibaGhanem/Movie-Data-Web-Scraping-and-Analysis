@@ -5,6 +5,7 @@ import csv
 import pandas as pd
 import itertools
 import re
+import numpy as np
 
 class MoviesSpider(scrapy.Spider):
     name = 'movies_spider'
@@ -26,10 +27,8 @@ class MoviesSpider(scrapy.Spider):
         for title in titles:
             substrings = re.search(r'(.+)\s\((\d{4})\)', title)
             titles[titles.index(title)] = substrings.group(1)
-            print(title)
             release_year.append(substrings.group(2))
             
-        print(titles)
 
         updated_alt_titles = []
         updated_genre = []
@@ -39,7 +38,7 @@ class MoviesSpider(scrapy.Spider):
         for alt_title,genre in zip(alt_titles,genres):
             if "Alternative title: " in alt_title:
                 alt_title = alt_title.replace("Alternative title:",'')
-                updated_alt_titles.append(alt_title)
+                updated_alt_titles.append(alt_title.strip())
                 updated_genre.append(genre)
                 updated_duration.append(duration[i])
                 i+=1
