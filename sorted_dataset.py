@@ -9,13 +9,14 @@ merged_dataset.head(20)
 
 #sorted_dataset
 
-merged_dataset = pd.read_csv('/content/merged_movie_data.csv')
-sorted_dataset = merged_dataset.sort_values(by = ['Title', 'MoviemeterRating', 'IMDbRating'])
-sorted_dataset.reset_index(drop=True)
-sorted_dataset.to_csv('sorted_dataset.csv',index=False)
+
+
+merged_data = pd.read_csv('/content/merged_movie_data.csv')
+sorted_data = merged_data.sort_values(by = ['MoviemeterRating','IMDbRating'], ascending=False)
+sorted_data
 
 #Remove duplicated rows
-deduplicated_dataset = sorted_dataset.drop_duplicates()
+deduplicated_dataset = sorted_data.drop_duplicates()
 deduplicated_rows = deduplicated_dataset[deduplicated_dataset.duplicated()]
 if not deduplicated_rows.empty:
   print("Duplicated rows found")
